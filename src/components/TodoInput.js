@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import store  from "../todoStore";
 
 const getCurrentDate = () => {
@@ -9,9 +9,12 @@ const getCurrentDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-const TodoInput = ({ isDarkMode }) => {
+const TodoInput = (/*{ isDarkMode }*/) => {
   const [todoTitle, setTodoTitle] = useState("");
   const [dueDate, setDueDate] = useState(getCurrentDate());
+
+  // const isDarkMode = store.getState().preferencesReducer.isDarkMode;
+  const [isDarkMode, setIsDarkMode] = useState(store.getState().preferencesReducer.isDarkMode); // additional Activity
   
   const handleTodoTitleChange = (e) => {
     setTodoTitle(e.target.value);
@@ -20,6 +23,13 @@ const TodoInput = ({ isDarkMode }) => {
   const handleDueDateChange = (e) => {
     setDueDate(e.target.value);
   };
+
+  // additional Activity
+  useEffect(() => {
+    store.subscribe(() => {
+      setIsDarkMode(store.getState().preferencesReducer.isDarkMode);
+    });
+  }, []);
 
   return (
     <div className={`form-control  ${isDarkMode && "form-control-dark"}`}>

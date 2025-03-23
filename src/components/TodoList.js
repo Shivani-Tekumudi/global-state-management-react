@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import TodoListItem from "./TodoListItem";
 import TodoMenu from "./TodoMenu";
+import store from "../todoStore";
 
-const TodoList = ({ todos, isDarkMode }) => {
-  const [filteredTodos, setFilteredTodos] = useState([])
+import data from "../data/initialTodos"
+
+const TodoList = ({ /*isDarkMode*/ }) => {
+  const [filteredTodos, setFilteredTodos] = useState([]);
+
+  const [todos, setTodos] = useState(data);
+
+  // const isDarkMode = store.getState().preferencesReducer.isDarkMode;
+  const [isDarkMode, setIsDarkMode] = useState(store.getState().preferencesReducer.isDarkMode); // additional Activity
 
   useEffect(() => {
     const handleFilterTodos = (todos, filterStatus) => {
@@ -15,13 +23,24 @@ const TodoList = ({ todos, isDarkMode }) => {
           setFilteredTodos(todos.filter((todo) => todo.completed));
           break  
         default:
-          setFilteredTodos(todos)
+          setFilteredTodos([...todos]) 
           break
       }
     };
 
-    handleFilterTodos(todos, "all")
-  }, [])
+    let filterStatus = store.getState().todoReducer.filterStatus;
+    handleFilterTodos(todos, filterStatus);
+
+    store.subscribe(() => {
+      let {filterStatus} = store.getState().todoReducer;
+      handleFilterTodos(todos, filterStatus);
+    });
+
+    // additional Activity
+    store.subscribe(() => {
+      setIsDarkMode(store.getState().preferencesReducer.isDarkMode);
+    });
+  }, []);
 
   return (
     <>

@@ -2,16 +2,29 @@ import React, { useEffect } from "react";
 import SwitchToDarkIcon from "../images/icon-moon.svg";
 import SwitchToLightIcon from "../images/icon-sun.svg";
 import store from "../todoStore";
+// import { toggleDarkMode } from "../todoStore";
+import { toggleDarkMode } from "../actions";
 
-const Header = ({ isDarkMode, setIsDarkMode }) => {
+
+const Header = () => {
+
+  const isDarkMode = store.getState().preferencesReducer.isDarkMode;
   
   const getThemeIcon = (isDarkMode) => {
     return isDarkMode ? SwitchToLightIcon : SwitchToDarkIcon;
   }
   let themeIcon = getThemeIcon(isDarkMode);
 
+  useEffect(() => {
+    store.subscribe(() => {
+      let isDarkMode = store.getState().preferencesReducer.isDarkMode;
+      document.getElementById("themeIcon").src = getThemeIcon(isDarkMode);
+    })
+  }, [])
+
   const changeTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    // setIsDarkMode(!isDarkMode);
+    store.dispatch(toggleDarkMode());
   };
 
   return (
